@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 from tokamak_sim import EnergyController, TokamakAnimator, TokamakSimulation
 
