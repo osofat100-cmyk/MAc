@@ -41,14 +41,34 @@ numpy
 
 (Optionally install `ffmpeg` system-wide when exporting animations.)
 
+## VS Code setup
+
+The repository ships with a pre-configured [`.vscode`](.vscode) folder so the
+project behaves like a native VS Code Python workspace:
+
+- `settings.json` points the Python extension at the local `.venv`
+  interpreter (create it with the commands above).
+- `launch.json` defines a **Run live animation** launch configuration bound to
+  `examples/run_live_animation.py`.
+- `extensions.json` recommends the Python and Pylance extensions for rich
+  language features.
+
+After the virtual environment has been created and dependencies installed, open
+the repository in VS Code and press the **Run** button at the top right of
+`examples/run_live_animation.py` (or choose the **Run live animation** launch
+configuration). VS Code automatically activates the virtual environment and
+starts the script in the integrated terminal.
+
 ## Running the live animation
 
 The `examples/run_live_animation.py` script initialises an ITER-like plasma,
-activates the nonlinear controller, and launches the 3-D animation. The script
-also demonstrates how to export the animation to an MP4 file:
+activates the nonlinear controller, and launches the 3-D animation. By default
+the animation is displayed interactively; pass `--save` to export an MP4 file
+instead:
 
 ```bash
-python examples/run_live_animation.py
+python examples/run_live_animation.py          # interactive window
+python examples/run_live_animation.py --save   # writes tokamak.mp4 via ffmpeg
 ```
 
 Running the script will open a Matplotlib window that updates the plasma
