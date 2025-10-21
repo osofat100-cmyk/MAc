@@ -14,12 +14,18 @@ from .simulation import TokamakSimulation
 
 @dataclass
 class TokamakAnimator:
-    """Render a 3-D scatter animation of simulation particle positions."""
+    """Render a 3-D scatter animation of simulation particle positions.
+
+    The `steps_per_frame` parameter lets the animation advance multiple
+    simulation steps between redraws, useful when the simulation uses
+    a very small `dt` for stability.
+    """
 
     simulation: TokamakSimulation
     frame_interval: int = 30
     sample_particles: int = 2000
     cmap: str = "viridis"
+    steps_per_frame: int = 1
 
     def animate(
         self,
@@ -79,7 +85,10 @@ class TokamakAnimator:
         def update(_frame: int):
             nonlocal scatter
 
-            if getattr(self.simulation, "abort_reason", None) is None:
+            steps_this_frame = max(1, int(self.steps_per_frame))
+            for _ in range(steps_this_frame):
+                if getattr(self.simulation, "abort_reason", None) is not None:
+                    break
                 self.simulation.step()
                 total_energy = float(getattr(self.simulation, "total_energy", 0.0))
                 power = controller_power(total_energy)

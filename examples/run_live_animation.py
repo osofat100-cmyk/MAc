@@ -45,7 +45,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser = _build_parser()
     args = parser.parse_args(argv)
 
-    simulation = TokamakSimulation(max_time=5e-3, dt=2e-7, grid_shape=(20, 20, 20))
+    simulation = TokamakSimulation(max_time=5e-4, dt=5e-12, grid_shape=(24, 24, 24))
 
     def density_profile(r: float, z: float) -> float:
         return 5e19 * max(0.0, 1.0 - (r**2 + z**2) / simulation.minor_radius**2)
@@ -53,7 +53,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     def temperature_profile(r: float, z: float) -> float:
         return 5e3 * max(0.1, 1.0 - 0.5 * (r**2 + z**2) / simulation.minor_radius**2)
 
-    simulation.initialise_plasma(density_profile, temperature_profile, macro_particles=4000)
+    simulation.initialise_plasma(density_profile, temperature_profile, macro_particles=2500)
     # Debug: print how many macro-particles were created and sample positions
     try:
         print(f"Initialized particles: {len(simulation.particles)}")
@@ -83,7 +83,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         print('Failed to save initial snapshot:', e)
     controller = EnergyController(target_energy=8e4, critical_energy=1e5)
 
-    animator = TokamakAnimator(simulation, frame_interval=50, sample_particles=1000)
+    animator = TokamakAnimator(
+        simulation,
+        frame_interval=50,
+        sample_particles=1000,
+        steps_per_frame=80,
+    )
     animation = animator.animate(controller=controller, frames=args.frames)
 
     if args.save:
