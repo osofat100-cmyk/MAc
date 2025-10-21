@@ -1,0 +1,4 @@
+add_executable(tokamak_sim_smoke tests_smoke.cpp)
+target_link_libraries(tokamak_sim_smoke PRIVATE tokamak_sim_core gtest_main)
+
+add_test(NAME tokamak_sim_smoke COMMAND tokamak_sim_smoke)
