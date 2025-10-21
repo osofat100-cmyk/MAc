@@ -67,9 +67,12 @@ def main(argv: Sequence[str] | None = None) -> None:
         import matplotlib.pyplot as _plt
         pos = np.array(list(simulation.iter_positions()))
         if pos.size > 0:
+            from typing import Any, cast
+
             fig = _plt.figure(figsize=(6,6))
             ax = fig.add_subplot(111, projection='3d')
-            ax.scatter(pos[:,0], pos[:,1], pos[:,2], s=2)
+            ax_any = cast(Any, ax)
+            ax_any.scatter(pos[:,0], pos[:,1], pos[:,2], s=2)
             ax.set_xlim(-simulation.minor_radius, simulation.minor_radius)
             ax.set_ylim(-simulation.minor_radius, simulation.minor_radius)
             ax.set_zlim(-simulation.minor_radius, simulation.minor_radius)

@@ -1,4 +1,5 @@
 """Tokamak simulation package with visualization support."""
+"""Tokamak simulation package with visualization support."""
 
 from .constants import qe, me, mp, c, MU0, EPS0, GRAVITY
 from .species import Species, ELECTRON, DEUTERON, TRITON, ALPHA
