@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Callable, Iterable, Optional
+from typing import Callable, Iterable, Optional, TYPE_CHECKING
 
 import numpy as np
 
@@ -11,6 +11,9 @@ from .constants import ALPHA_BIRTH_ENERGY_J, GRAVITY, NEUTRON_ENERGY_J, c
 from .fields import FieldSolver
 from .particle import Particle
 from .species import ALPHA, DEUTERON, ELECTRON, TRITON
+
+if TYPE_CHECKING:
+    from .controller import EnergyController
 
 DensityProfile = Callable[[float, float], float]
 TemperatureProfile = Callable[[float, float], float]
@@ -191,9 +194,7 @@ class TokamakSimulation:
         if self.time >= self.max_time:
             self.abort_reason = "completed"
 
-    def run(self, controller: Optional["EnergyController"] = None) -> None:
-        from .controller import EnergyController
-
+    def run(self, controller: Optional[EnergyController] = None) -> None:
         energy_history: list[float] = []
         time_history: list[float] = []
         while self.abort_reason is None:
