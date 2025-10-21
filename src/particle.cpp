@@ -6,6 +6,14 @@
 
 namespace sim {
 
+void ParticleState::reserve(std::size_t count) {
+  positions_.reserve(count);
+  velocities_.reserve(count);
+  weights_.reserve(count);
+  gamma_.reserve(count);
+  species_.reserve(count);
+}
+
 std::size_t ParticleState::emplace_particle(const Species& species, const Vec3& position, const Vec3& velocity, double weight) {
   positions_.push_back(position);
   velocities_.push_back(velocity);

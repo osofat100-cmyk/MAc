@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(tokamak_sim_cpp LANGUAGES CXX)
 
+include(FetchContent)
+
 option(SIM_ENABLE_OPENMP "Enable OpenMP support" ON)
 option(SIM_BUILD_TESTS "Build unit tests" ON)
 
@@ -27,7 +29,17 @@ if(Eigen3_FOUND)
   target_link_libraries(tokamak_sim_core PUBLIC Eigen3::Eigen)
   target_compile_definitions(tokamak_sim_core PUBLIC SIM_HAVE_EIGEN)
 else()
-  message(STATUS "Eigen3 not found - expect to add vendor copy or provide include path later.")
+  message(STATUS "Eigen3 not found - fetching Eigen 3.4.0 via FetchContent")
+  FetchContent_Declare(
+    eigen
+    URL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz
+  )
+  FetchContent_GetProperties(eigen)
+  if(NOT eigen_POPULATED)
+    FetchContent_Populate(eigen)
+  endif()
+  target_include_directories(tokamak_sim_core SYSTEM PUBLIC ${eigen_SOURCE_DIR})
+  target_compile_definitions(tokamak_sim_core PUBLIC SIM_HAVE_EIGEN)
 endif()
 
 target_sources(
@@ -40,7 +52,6 @@ target_sources(
 
 if(SIM_BUILD_TESTS)
   enable_testing()
-  include(FetchContent)
   FetchContent_Declare(
     googletest
     URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip

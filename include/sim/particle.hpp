@@ -16,6 +16,7 @@ class ParticleState {
   ParticleState() = default;
 
   [[nodiscard]] std::size_t size() const noexcept { return positions_.size(); }
+  void reserve(std::size_t count);
 
   std::size_t emplace_particle(const Species& species, const Vec3& position, const Vec3& velocity, double weight = 1.0);
 
