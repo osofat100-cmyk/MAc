@@ -26,14 +26,16 @@ class TokamakAnimator:
         self.simulation.time_history = np.array([])
         fig = plt.figure(figsize=(8, 6))
         ax = fig.add_subplot(111, projection="3d")
-        ax.set_xlim((-self.simulation.minor_radius, self.simulation.minor_radius))
-        ax.set_ylim((-self.simulation.minor_radius, self.simulation.minor_radius))
-        ax.set_zlim((-self.simulation.minor_radius, self.simulation.minor_radius))
+    lim = 1.2 * self.simulation.minor_radius
+    ax.set_xlim((-lim, lim))
+    ax.set_ylim((-lim, lim))
+    ax.set_zlim((-lim, lim))
         ax.set_xlabel("x [m]")
         ax.set_ylabel("y [m]")
         ax.set_zlabel("z [m]")
         ax.set_title("3-D Tokamak Plasma Simulation")
-        scatter = ax.scatter([], [], [], c=[], cmap=self.cmap, s=5, vmin=0, vmax=3)
+    # larger marker size and slight transparency to improve visibility
+    scatter = ax.scatter([], [], [], c=[], cmap=self.cmap, s=12, alpha=0.9, vmin=0, vmax=3)
 
         torus_u = np.linspace(0, 2 * np.pi, 50)
         torus_v = np.linspace(0, 2 * np.pi, 20)
@@ -44,6 +46,12 @@ class TokamakAnimator:
         torus_y = (R + r * np.cos(v)) * np.sin(u)
         torus_z = r * np.sin(v)
         ax.plot_wireframe(torus_x, torus_y, torus_z, color="grey", linewidth=0.3, alpha=0.5)
+
+        # Ensure axes have equal aspect (matplotlib >=3.3)
+        try:
+            ax.set_box_aspect([1, 1, 1])
+        except Exception:
+            pass
 
         def update(frame: int):
             if self.simulation.abort_reason is None:

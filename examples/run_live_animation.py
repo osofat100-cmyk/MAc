@@ -54,6 +54,30 @@ def main(argv: Sequence[str] | None = None) -> None:
         return 5e3 * max(0.1, 1.0 - 0.5 * (r**2 + z**2) / simulation.minor_radius**2)
 
     simulation.initialise_plasma(density_profile, temperature_profile, macro_particles=4000)
+    # Debug: print how many macro-particles were created and sample positions
+    try:
+        print(f"Initialized particles: {len(simulation.particles)}")
+        sample_pos = list(simulation.iter_positions())[:5]
+        for i, p in enumerate(sample_pos):
+            print(f" sample {i}: {p}")
+    except Exception as e:
+        print("Debug inspect failed:", e)
+    # Save a quick static snapshot of initial particle positions to help debugging
+    try:
+        import matplotlib.pyplot as _plt
+        pos = np.array(list(simulation.iter_positions()))
+        if pos.size > 0:
+            fig = _plt.figure(figsize=(6,6))
+            ax = fig.add_subplot(111, projection='3d')
+            ax.scatter(pos[:,0], pos[:,1], pos[:,2], s=2)
+            ax.set_xlim(-simulation.minor_radius, simulation.minor_radius)
+            ax.set_ylim(-simulation.minor_radius, simulation.minor_radius)
+            ax.set_zlim(-simulation.minor_radius, simulation.minor_radius)
+            fig.savefig('initial_particles.png', dpi=150)
+            print('Saved initial_particles.png')
+            _plt.close(fig)
+    except Exception as e:
+        print('Failed to save initial snapshot:', e)
     controller = EnergyController(target_energy=8e4, critical_energy=1e5)
 
     animator = TokamakAnimator(simulation, frame_interval=50, sample_particles=1000)
