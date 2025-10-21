@@ -135,7 +135,7 @@ class TokamakSimulation:
 
     def _fusion_events(self) -> None:
         rng = np.random.default_rng()
-        volume = np.product(self.grid_shape) * np.product(self.grid_spacing)
+        volume = np.prod(self.grid_shape) * np.prod(self.grid_spacing)
         rate = self.fusion_cross_section * self.dt / max(volume, 1e-12)
         new_particles: list[Particle] = []
         neutrons = 0.0
