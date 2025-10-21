@@ -41,15 +41,7 @@ class TokamakAnimator:
         ax.set_zlabel("z [m]")
         ax.set_title("3-D Tokamak Plasma Simulation")
 
-        scatter = ax_any.scatter(
-            np.array([]),
-            np.array([]),
-            np.array([]),
-            c=np.array([]),
-            cmap=self.cmap,
-            s=8,
-            alpha=0.9,
-        )
+        scatter = ax_any.scatter([], [], [], c=[], cmap=self.cmap, s=8, alpha=0.9)
 
         # Optional torus wireframe for reference
         torus_u = np.linspace(0, 2 * np.pi, 50)
@@ -100,18 +92,11 @@ class TokamakAnimator:
             positions = np.asarray(list(self.simulation.iter_positions()), dtype=float)
             if positions.size == 0:
                 try:
-                    scatter.remove()
+                    scatter._offsets3d = ([], [], [])
                 except Exception:
-                    pass
-                scatter = ax_any.scatter(
-                    np.array([]),
-                    np.array([]),
-                    np.array([]),
-                    c=np.array([]),
-                    cmap=self.cmap,
-                    s=8,
-                    alpha=0.9,
-                )
+                    scatter.remove()
+                    scatter = ax_any.scatter([], [], [], c=[], cmap=self.cmap, s=8, alpha=0.9)
+                scatter.set_array(np.array([]))
                 ax.set_title("3-D Tokamak Plasma Simulation (no particles)")
                 return (scatter,)
 
@@ -123,26 +108,27 @@ class TokamakAnimator:
                 plot_pos = positions
 
             try:
+                scatter._offsets3d = (plot_pos[:, 0], plot_pos[:, 1], plot_pos[:, 2])
+            except Exception:
+                # Some matplotlib combos require recreating the collection
+                scatter.remove()
+                scatter = ax_any.scatter(
+                    plot_pos[:, 0],
+                    plot_pos[:, 1],
+                    plot_pos[:, 2],
+                    cmap=self.cmap,
+                    s=8,
+                    alpha=0.9,
+                )
+
+            try:
                 species_all = np.asarray(self.simulation.get_species_indices(), dtype=float)
                 species = species_all[: len(plot_pos)]
                 if species.size < len(plot_pos):
                     species = np.pad(species, (0, len(plot_pos) - species.size))
+                scatter.set_array(species)
             except Exception:
-                species = np.zeros(len(plot_pos), dtype=float)
-
-            try:
-                scatter.remove()
-            except Exception:
-                pass
-            scatter = ax_any.scatter(
-                plot_pos[:, 0],
-                plot_pos[:, 1],
-                plot_pos[:, 2],
-                c=species,
-                cmap=self.cmap,
-                s=8,
-                alpha=0.9,
-            )
+                scatter.set_array(np.zeros(len(plot_pos), dtype=float))
 
             particle_count = len(getattr(self.simulation, "particles", []))
             current_time = float(getattr(self.simulation, "time", 0.0))
