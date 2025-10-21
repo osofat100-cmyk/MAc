@@ -3,11 +3,18 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from pathlib import Path
 from typing import Sequence
 
 import matplotlib.pyplot as plt
 import numpy as np
+
+# Make package importable when running example directly: add project root to sys.path
+# (assumes examples/ sits next to tokamak_sim/ package in the repository)
+repo_root = Path(__file__).resolve().parents[1]
+if str(repo_root) not in sys.path:
+    sys.path.insert(0, str(repo_root))
 
 from tokamak_sim import EnergyController, TokamakAnimator, TokamakSimulation
 
